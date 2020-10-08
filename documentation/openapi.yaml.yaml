@@ -1,0 +1,805 @@
+openapi: 3.0.1
+info:
+  title: Livraria Novo Mundo
+  description:
+    Aplicação idealizada para ser utilizada como estoque de uma grande rede de
+    livrarias. Conta com cadastro e manutenção de livros, cadastro e manutenção
+    de usuários e também cadastro e manutenção de lojas da rede.
+  contact:
+    email: massao.sg@gmail.com
+  version: 1.0.0
+servers:
+  - url: https://projetoDW2A4.massaosugai.repl.co
+tags:
+  - name: lojas
+    description: Tudo sobre as lojas cadastradas na rede.
+  - name: usuarios
+    description: Acesso aos dados dos usuários e seus cadastros na rede.
+  - name: livros
+    description: Livros, seus dados e quantidade de estoque.
+paths:
+  /lojas:
+    post:
+      tags:
+        - lojas
+      summary: Adiciona lojas ao sistema da rede.
+      operationId: criarLoja
+      requestBody:
+        description: Objeto que contém os dados da loja.
+        content:
+          application/json:
+            schema:
+              properties:
+                nome:
+                  type: string
+                  description: Nome da loja.
+                endereco:
+                  type: string
+                  description: Endereco da loja.
+                telefone:
+                  type: string
+                  description: Telefone da loja.
+        required: true
+      responses:
+        '201':
+          description: Loja cadastrada com sucesso.
+          content:
+            application/json:
+              examples:
+                loja_criada:
+                  value: |-
+                    {
+                        "id": "UUID",
+                        "nome": "string",
+                        "endereco": "string",
+                        "telefone": "string"
+                    }
+        '400':
+          description: Loja não cadastrada
+          content:
+            application/json:
+              examples:
+                erro_loja:
+                  value: |-
+                    {
+                      erro: 'A loja não foi cadastrada'
+                    }
+      x-codegen-request-body-name: body
+    get:
+      tags:
+        - lojas
+      summary: Busca todas as lojas.
+      description: Realiza busca geral de lojas, retornando assim, todas as lojas cadastradas na rede.
+      operationId: buscarLojas
+      responses:
+        '200':
+          description: Lojas encontradas.
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    description: Retorna o ID da loja.
+                  nome:
+                    type: string
+                    description: Retorna o nome da loja.
+                  endereco:
+                    type: string
+                    description: Retorna o endereco da loja.
+                  telefone:
+                    type: string
+                    description: Retorna o telefone da loja.
+        '400':
+          description: Nenhuma loja encontrada.
+          content:
+            application/json:
+              examples:
+                erro_loja:
+                  value: |-
+                    {
+                      erro: 'Nenhuma loja foi encontrada'
+                    }
+                    
+  /lojas/{lojaId}:
+    get:
+      tags:
+        - lojas
+      summary: Procura loja via ID.
+      description: Retorna apenas uma loja, a do ID declarado
+      operationId: buscarLojaPorID
+      parameters:
+        - name: lojaId
+          in: path
+          description: ID da loja que se busca.
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: Loja encontrada
+          content:
+            application/json:
+              schema:
+                properties:
+                  nome:
+                    type: string
+                    description: Nome da loja.
+                  endereco:
+                    type: string
+                    description: Endereco da loja.
+                  telefone:
+                    type: string
+                    description: Telefone da loja.
+        '404':
+          description: Loja não encontrada.
+        '400':
+          description: Loja não encontrada.
+          content:
+            application/json:
+              examples:
+                erro_loja:
+                  value: |-
+                    {
+                      erro: 'A loja não foi encontrada'
+                    }
+    put:
+      tags:
+        - lojas
+      summary: Atualiza o cadastro da loja no sistema de rede.
+      operationId: atualizarLoja
+      parameters:
+        - name: lojaId
+          in: path
+          description: ID da loja que precisa ser atualizada
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                nome:
+                  type: string
+                  description: Atualiza o nome da loja.
+                endereco:
+                  type: string
+                  description: Atualiza o endereco da loja.
+      responses:
+        '200':
+          description: Loja atualizada.
+          content:
+            application/json:
+              schema:
+                properties:
+                  nome:
+                    type: string
+                    description: Nome da loja.
+                  endereco:
+                    type: string
+                    description: Endereco da loja.
+                  telefone:
+                    type: string
+                    description: Telefone da loja.
+        '404':
+          description: Loja não encontrada.
+        '400':
+          description: Loja não atualizada.
+          content:
+            application/json:
+              examples:
+                erro_loja:
+                  value: |-
+                    {
+                      erro: 'A loja não foi atualizada'
+                    }
+    delete:
+      tags:
+        - lojas
+      summary: Deleta uma loja cadastrada
+      operationId: deletarLoja
+      parameters:
+        - name: lojaId
+          in: path
+          description: ID da loja que será deletada.
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '404':
+          description: Loja não encontrada.
+        '204':
+          description: Loja deletada.
+        '400':
+          description: Loja não deletada.
+          content:
+            application/json:
+              examples:
+                erro_loja:
+                  value: |-
+                    {
+                      erro: 'A loja não foi deletada'
+                    }
+          
+  /usuarios:
+    post:
+      tags:
+        - usuarios
+      summary: Adiciona usuarios ao sistema da rede.
+      operationId: criarUsuario
+      requestBody:
+        description: Objeto que contém os dados do usuário.
+        content:
+          application/json:
+            schema:
+              properties:
+                nome:
+                  type: string
+                  description: Nome do usuário.
+                email:
+                  type: string
+                  description: Email do usuário.
+                loja:
+                  type: string
+                  description: ID da loja que o usuário faz parte.
+                senha:
+                  type: string
+                  description: Senha do usuário.
+        required: true
+      responses:
+        '201':
+          description: Usuário cadastrado com sucesso.
+          content:
+            application/json:
+              examples:
+                usuario_criado:
+                  value: |-
+                    {
+                        "id": "UUID",
+                        "nome": "string",
+                        "email": "string",
+                        "loja": "UUID",
+                        "senha": "sha-256"
+                    }
+        '400':
+          description: Usuário não cadastrado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O usuário não foi cadastrado'
+                    }
+      x-codegen-request-body-name: body
+    get:
+      tags:
+        - usuarios
+      summary: Busca todas os usuários.
+      description: Realiza busca geral de usuários, retornando assim, todos os usuários cadastrados na rede.
+      operationId: buscaUsuarios
+      responses:
+        '200':
+          description: Usuarios encontradas.
+          content:
+            application/json:
+              schema:
+                properties:
+                  nome:
+                    type: string
+                    description: Retorna o nome do usuário.
+                  email:
+                    type: string
+                    description: Retorna o email usuário.
+                  loja:
+                    type: string
+                    description: Retorna o ID da loja que o usuário faz parte.
+                  senha:
+                    type: string
+                    description: Retorna a senha do usuário em sha-256.
+        '400':
+          description: Nenhum usuário encontrado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'Nenhum usuário foi encontrado'
+                    }
+                    
+  /usuarios/{usuarioId}:
+    get:
+      tags:
+        - usuarios
+      summary: Procura um usuário via ID.
+      description: Retorna apenas um usuário, o do ID declarado
+      operationId: buscarUsuarioPorID
+      parameters:
+        - name: usuarioId
+          in: path
+          description: ID do usuário que se busca.
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: Usuário encontrado
+          content:
+            application/json:
+              schema:
+                properties:
+                  nome:
+                    type: string
+                    description: Retorna o nome do usuário.
+                  email:
+                    type: string
+                    description: Retorna o email usuário.
+                  loja:
+                    type: string
+                    description: Retorna o ID da loja que o usuário faz parte.
+                  senha:
+                    type: string
+                    description: Retorna a senha do usuário em sha-256.
+        '404':
+          description: Usuário não encontrada
+        '400':
+          description: Usuário não cadastrado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O usuário não foi encontrado'
+                    }
+    put:
+      tags:
+        - usuarios
+      summary: Atualiza o cadastro do usuário no sistema de rede.
+      operationId: atualizarUsuario
+      parameters:
+        - name: usuarioId
+          in: path
+          description: ID do usuário que precisa ser atualizada
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  description: Atualiza o email do usuário.
+                senha:
+                  type: string
+                  description: Atualiza a senha do usuário.
+      responses:
+        '200':
+          description: Usuário atualizado.
+          content:
+            application/json:
+              schema:
+                properties:
+                  nome:
+                    type: string
+                    description: Retorna o nome do usuário.
+                  email:
+                    type: string
+                    description: Retorna o email usuário.
+                  loja:
+                    type: string
+                    description: Retorna o ID da loja que o usuário faz parte.
+                  senha:
+                    type: string
+                    description: Retorna a senha do usuário em sha-256.
+        '404':
+          description: Usuário não encontrado.
+        '400':
+          description: Usuário não atualizado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O usuário não foi atualizado'
+                    }
+    delete:
+      tags:
+        - usuarios
+      summary: Deleta um usuário cadastrada
+      operationId: deletarUsuario
+      parameters:
+        - name: usuarioId
+          in: path
+          description: ID do ujsuário que será deletado.
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '404':
+          description: Usuário não encontrado.
+        '204':
+          description: Usuário deletado.     
+        '400':
+          description: Usuário não deletado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O usuário não foi deletado'
+                    }               
+          
+  /livros:
+    post:
+      tags:
+        - livros
+      summary: Adiciona livros ao sistema da rede.
+      operationId: cadastrarLivro
+      requestBody:
+        description: Objeto que contém os dados do livro.
+        content:
+          application/json:
+            schema:
+              properties:
+                titulo:
+                  type: string
+                  description: Título do livro.
+                autor:
+                  type: string
+                  description: Autor do livro.
+                isbn:
+                  type: string
+                  description: ISBN do livro.
+                preco:
+                  type: string
+                  description: Preço do livro.
+                qtd:
+                  type: integer
+                  description: Quantidade em estoque.
+                usuario:
+                  type: string
+                  description: ID do usúario que realizou o cadastro.
+        required: true
+      responses:
+        '201':
+          description: Livro cadastrada com sucesso
+          content:
+            application/json:
+              examples:
+                loja_criada:
+                  value: |-
+                    {
+                        "id": "UUID",
+                        "titulo": "string",
+                        "autor": "string",
+                        "isbn": "string",
+                        "preco": "string",
+                        "qtd": "integer",
+                        "usuario": "string"
+                    }
+        '400':
+          description: Livro não cadastrado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O livro não foi cadastrado'
+                    }
+      x-codegen-request-body-name: body
+    get:
+      tags:
+        - livros
+      summary: Busca todos os livros cadastrados.
+      description: Realiza busca geral de livros, retornando assim, todas os livros indepentende do usuário que cadastrou.
+      operationId: buscarLivros
+      responses:
+        '200':
+          description: Livros encontrados.
+          content:
+            application/json:
+              schema:
+                properties:
+                  titulo:
+                    type: string
+                    description: Retorna o título do livro.
+                  autor:
+                    type: string
+                    description: Retorna o autor do livro.
+                  isbn:
+                    type: string
+                    description: Retorna o ISBN do livro.
+                  preco:
+                    type: string
+                    description: Retorna o preço do livro.
+                  qtd:
+                    type: integer
+                    description: Retorna a quantidade em estoque.
+                  usuario:
+                    type: string
+                    description: Retorna o ID do usúario que realizou o cadastro.
+        '400':
+          description: Nenhum livro foi encontrado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'Nenhuma livro foi encontrado'
+                    }
+                    
+  /livros/{livroId}:
+    get:
+      tags:
+        - livros
+      summary: Procura livro via ID.
+      description: Retorna apenas uma livro, a do ID declarado.
+      operationId: buscarLivroPorID
+      parameters:
+        - name: livroId
+          in: path
+          description: ID do livro que se busca.
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '200':
+          description: Livro encontrado.
+          content:
+            application/json:
+              schema:
+                properties:
+                  titulo:
+                    type: string
+                    description: Retorna o título do livro.
+                  autor:
+                    type: string
+                    description: Retorna o autor do livro.
+                  isbn:
+                    type: string
+                    description: Retorna o ISBN do livro.
+                  preco:
+                    type: string
+                    description: Retorna o preço do livro.
+                  qtd:
+                    type: integer
+                    description: Retorna a quantidade em estoque.
+                  usuario:
+                    type: string
+                    description: Retorna o ID do usúario que realizou o cadastro.
+        '404':
+          description: Livro não encontrado.
+        '400':
+          description: Livro não encontrado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O livro não foi encontrado'
+                    }
+    put:
+      tags:
+        - livros
+      summary: Atualiza o cadastro do livro no sistema de rede.
+      operationId: atualizarLivro
+      parameters:
+        - name: livroId
+          in: path
+          description: ID do livro que precisa ser atualizado.
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                preco:
+                  type: string
+                  description: Atualiza o preço do livro.
+                usuario:
+                  type: string
+                  description: Atualiza o último usuário a mexer no cadastro.
+      responses:
+        '200':
+          description: Livro atualizado.
+          content:
+            application/json:
+              schema:
+                properties:
+                  titulo:
+                    type: string
+                    description: Retorna o título do livro.
+                  autor:
+                    type: string
+                    description: Retorna o autor do livro.
+                  isbn:
+                    type: string
+                    description: Retorna o ISBN do livro.
+                  preco:
+                    type: string
+                    description: Retorna o preço do livro.
+                  qtd:
+                    type: integer
+                    description: Retorna a quantidade em estoque.
+                  usuario:
+                    type: string
+                    description: Retorna o ID do usúario que realizou o cadastro.
+        '404':
+          description: Livro não encontrado.
+        '400':
+          description: Livro não atualizado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O livro não foi atualizado'
+                    }
+    delete:
+      tags:
+        - livros
+      summary: Deleta um livro cadastrado.
+      operationId: deletarLivro
+      parameters:
+        - name: livroId
+          in: path
+          description: ID do livro que será deletada.
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        '404':
+          description: Livro não encontrado.
+        '204':
+          description: Livro deletado.
+        '400':
+          description: Livro não deletado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O livro não foi deletado'
+                    }
+  
+  /livros/stock/{livroId}:
+    put:
+      tags:
+        - livros
+      summary: Atualiza a quantidade de livros em estoque no sistema de rede, somando o valor passado pelo body.
+      operationId: atualizarEstoqueLivro
+      parameters:
+        - name: livroId
+          in: path
+          description: ID do livro que precisa ser atualizado.
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                estoque:
+                  type: integer
+                  description: Atualiza a quantidade em estoque.
+                usuario:
+                  type: string
+                  description: Atualiza o último usuário a mexer no cadastro.
+      responses:
+        '200':
+          description: Livro atualizado.
+          content:
+            application/json:
+              schema:
+                properties:
+                  titulo:
+                    type: string
+                    description: Retorna o título do livro.
+                  autor:
+                    type: string
+                    description: Retorna o autor do livro.
+                  isbn:
+                    type: string
+                    description: Retorna o ISBN do livro.
+                  preco:
+                    type: string
+                    description: Retorna o preço do livro.
+                  qtd:
+                    type: integer
+                    description: Retorna a quantidade em estoque.
+                  usuario:
+                    type: string
+                    description: Retorna o ID do usúario que realizou o cadastro.
+        '404':
+          description: Livro não encontrado.
+        '400':
+          description: Livro não atualizado.
+          content:
+            application/json:
+              examples:
+                erro_usuario:
+                  value: |-
+                    {
+                      erro: 'O livro não foi atualizado'
+                    }
+          
+components:
+  schemas:
+    Livro:
+      type: object
+      properties:
+        id:
+          type: string
+          format: UUID
+        titulo:
+          type: string
+        autor:
+          type: string
+        isbn:
+          type: string
+        preco:
+          type: string
+        qtd:
+          type: integer
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+          format: UUID
+        nome:
+          type: string
+        email:
+          type: string
+        loja:
+          type: string
+          format: UUID
+        senha:
+          type: string
+    Loja:
+      type: object
+      properties:
+        id:
+          type: string
+          format: UUID
+        nome:
+          type: string
+        endereco:
+          type: string
+        telefone:
+          type: string
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        json:
+          type: object
